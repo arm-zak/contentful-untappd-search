@@ -43,10 +43,8 @@ const Sidebar = () => {
         );
         const item = await itemResponse.json()
         const imageId = await publishImage(item.response.beer.beer_label_hd, item.response.beer.beer_name)
-        console.log(item.response)
         await sdk.entry.fields.title.setValue(item.response.beer.beer_name);
         await sdk.entry.fields.alcoholRate.setValue(item.response.beer.beer_abv);
-
         await sdk.entry.fields.ibu.setValue(item.response.beer.beer_ibu);
         await sdk.entry.fields.type.setValue(item.response.beer.beer_style);
         await sdk.entry.fields.producer.setValue(item.response.beer.brewery.brewery_name);
