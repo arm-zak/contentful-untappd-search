@@ -21,7 +21,6 @@ const Sidebar = () => {
         );
         setValue("")
         const searchResults = await searchResponse.json()
-        console.log(searchResults.response.beers)
         const selectedItem = await sdk.dialogs.openCurrent({
             width: 500,
             minHeight: "25vh",
@@ -44,12 +43,17 @@ const Sidebar = () => {
         );
         const item = await itemResponse.json()
         const imageId = await publishImage(item.response.beer.beer_label_hd, item.response.beer.beer_name)
+        console.log(item.response)
         await sdk.entry.fields.title.setValue(item.response.beer.beer_name);
         await sdk.entry.fields.alcoholRate.setValue(item.response.beer.beer_abv);
+
+        await sdk.entry.fields.ibu.setValue(item.response.beer.beer_ibu);
         await sdk.entry.fields.type.setValue(item.response.beer.beer_style);
         await sdk.entry.fields.producer.setValue(item.response.beer.brewery.brewery_name);
         await sdk.entry.fields.description.setValue(item.response.beer.beer_description);
         await sdk.entry.fields.countryOrigin.setValue(countries.getAlpha2Code(item.response.beer.brewery.country_name, "en"));
+        await sdk.entry.fields.untappdRating.setValue(item.response.beer.rating_score);
+        await sdk.entry.fields.untappdUrl.setValue("https://untappd.com/b/beer/" + item.response.beer.bid);
         await sdk.entry.fields.image.setValue({sys:{
                 "type": "Link",
                 "linkType": "Asset",
