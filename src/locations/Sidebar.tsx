@@ -32,6 +32,20 @@ const Sidebar = () => {
         fillDetails(selectedItem)
     }
 
+    function getCountryCode(country : string) {
+        switch (country) {
+            case "England":
+                return "GB-ENG"
+            case 'Scotland':
+                return 'GB-SCT'
+            case 'Northern Ireland':
+                return 'GB-NIR'
+            case 'Wales':
+                return "GB-WLS"
+            default:
+                return countries.getAlpha2Code(country, "en")
+        }
+    }
     async function fillDetails(selectedItem: any) {
         const itemResponse = await fetch("https://api.untappd.com/v4/beer/info/" +
             selectedItem.beer.bid +
@@ -43,22 +57,20 @@ const Sidebar = () => {
         );
         const item = await itemResponse.json()
         const imageId = await publishImage(item.response.beer.beer_label_hd, item.response.beer.beer_name)
-        await sdk.entry.fields.title.setValue(item.response.beer.beer_name);
-        await sdk.entry.fields.alcoholRate.setValue(item.response.beer.beer_abv);
-        await sdk.entry.fields.ibu.setValue(item.response.beer.beer_ibu);
-        await sdk.entry.fields.type.setValue(item.response.beer.beer_style);
-        await sdk.entry.fields.producer.setValue(item.response.beer.brewery.brewery_name);
-        await sdk.entry.fields.description.setValue(item.response.beer.beer_description);
-        await sdk.entry.fields.countryOrigin.setValue(countries.getAlpha2Code(item.response.beer.brewery.country_name, "en"));
-        await sdk.entry.fields.untappdRating.setValue(item.response.beer.rating_score);
-        await sdk.entry.fields.untappdUrl.setValue("https://untappd.com/b/beer/" + item.response.beer.bid);
-        await sdk.entry.fields.image.setValue({sys:{
+        sdk.entry.fields.title.setValue(item.response.beer.beer_name);
+        sdk.entry.fields.alcoholRate.setValue(item.response.beer.beer_abv);
+        sdk.entry.fields.type.setValue(item.response.beer.beer_style);
+        sdk.entry.fields.producer.setValue(item.response.beer.brewery.brewery_name);
+        sdk.entry.fields.description.setValue(item.response.beer.beer_description);
+        sdk.entry.fields.countryOrigin.setValue(getCountryCode(item.response.beer.brewery.country_name));
+        sdk.entry.fields.image.setValue({sys:{
                 "type": "Link",
                 "linkType": "Asset",
                 "id": imageId
             }})
 
     }
+
     async function publishImage(imageUrl : string, beerName : string) : Promise<string> {
         if (imageUrl.length === 0 || imageUrl.split('/') === undefined || imageUrl.split('/').pop() === undefined){
             return ""
